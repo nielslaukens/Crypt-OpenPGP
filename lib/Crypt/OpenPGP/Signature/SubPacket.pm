@@ -69,11 +69,11 @@ use vars qw( %SUBPACKET_TYPES );
                         $_[0]->put_bytes($_[1]->{value}) } },
 
     21 => { name => 'Preferred hash algorithms',
-            r    => sub { [ unpack 'C', $_[0]->bytes ] },
+            r    => sub { [ unpack 'C*', $_[0]->bytes ] },
             w    => sub { $_[0]->put_bytes(pack 'C*', @{ $_[1] }) } },
 
     22 => { name => 'Preferred compression algorithms',
-            r    => sub { [ unpack 'C', $_[0]->bytes ] },
+            r    => sub { [ unpack 'C*', $_[0]->bytes ] },
             w    => sub { $_[0]->put_bytes(pack 'C*', @{ $_[1] }) } },
 
     23 => { name => 'Key server preferences',
