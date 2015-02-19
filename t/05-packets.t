@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 19;
+use Test::More;
 
 use Crypt::OpenPGP::Plaintext;
 use Crypt::OpenPGP::UserID;
@@ -19,6 +19,10 @@ they drop me through 12 bit samplers
 TEXT
 
 my $id = 'Foo Bar <foo@bar.com>';
+
+my @pkt;
+
+plan tests => 19 + 2*@pkt;
 
 # Saving packets
 my $pt = Crypt::OpenPGP::Plaintext->new( Data => $text );
@@ -95,3 +99,14 @@ ok $pkts[0]->{__unparsed}, 'plaintext packets are unparsed';
 is_deeply $pkts[1], $userid, 'userid packets are parsed';
 isa_ok $pkts[2], 'HASH';
 ok $pkts[2]->{__unparsed}, 'plaintext packets are unparsed';
+
+use Data::Dumper;
+my $i = 0;
+do {
+	$buf->empty();
+	$buf->put_bytes($pkt[$i]);
+	my $parsed = Crypt::OpenPGP::PacketFactory->parse($buf);
+	isnt $parsed, undef, "Parsed packet $i";
+	my $saved = Crypt::OpenPGP::PacketFactory->save($parsed);
+	is $saved, $pkt[$i], "parse-save roundtrip identical for packet $i";
+} while( ++$i < @pkt );
